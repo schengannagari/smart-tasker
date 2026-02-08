@@ -1,0 +1,42 @@
+########################
+# IntelliJ / IDE
+########################
+.idea/
+*.iml
+
+########################
+# macOS
+########################
+.DS_Store
+
+########################
+# Logs (root + modules)
+########################
+logs/
+**/logs/
+*.log
+*.log.gz
+
+########################
+# Maven / Java build output
+########################
+target/
+**/target/
+
+########################
+# Compiled files
+########################
+*.class
+
+########################
+# Environment / secrets
+########################
+application-local.properties
+**/application-local.properties
+.env
+
+########################
+# Maven wrapper (keep if you use it)
+########################
+!.mvn/wrapper/maven-wrapper.jar
+
