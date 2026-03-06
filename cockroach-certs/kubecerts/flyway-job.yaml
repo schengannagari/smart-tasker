@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration
+  namespace: smartworker
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: db-migration
+        image: schengannagari/db-migration:1.0
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://cockroachdb:26257/mydb?sslmode=verify-full&sslrootcert=/cockroach/certs/ca.crt
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_USER
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_PASSWORD
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        volumeMounts:
+        - name: certs
+          mountPath: /cockroach/certs
+          readOnly: true
+
+      volumes:
+      - name: certs
+        secret:
+          secretName: cockroach-certs

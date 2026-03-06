@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-core-cs-cont
+  namespace: smartworker
+
+spec:
+  selector:
+    app: app-core-cs-cont
+
+  ports:
+  - port: 8089
+    targetPort: 8089
+
+  type: ClusterIP

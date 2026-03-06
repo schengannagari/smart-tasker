@@ -1,0 +1,27 @@
+kubectl create secret generic cockroach-certs \
+  --from-file=cockroach-certs/kubecerts/ca.crt \
+  --from-file=cockroach-certs/kubecerts/node.crt \
+  --from-file=cockroach-certs/kubecerts/node.key \
+  --from-file=cockroach-certs/kubecerts/client.root.crt \
+  --from-file=cockroach-certs/kubecerts/client.root.key \
+  -n smartworker
+
+
+  openssl x509 -in node.crt -text -noout
+
+  kubectl create secret generic db-secret \
+ --from-literal=DB_USER=appuser \
+ --from-literal=DB_PASSWORD=appuser \
+ -n smartworker
+
+ cluster init
+ kubectl exec -it cockroachdb-0 -n smartworker -- \
+cockroach init \
+--certs-dir=/cockroach/certs \
+--host=cockroachdb-0.cockroachdb
+
+
+kubectl exec -it cockroachdb-0 -n smartworker -- \
+cockroach node status \
+--certs-dir=/cockroach/certs \
+--host=cockroachdb-0.cockroachdb

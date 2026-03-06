@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartworker-web
+  namespace: smartworker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smartworker-web
+  template:
+    metadata:
+      labels:
+        app: smartworker-web
+    spec:
+      containers:
+      - name: smartworker-web
+        image: schengannagari/smartworker-web:1.0
+        ports:
+        - containerPort: 80

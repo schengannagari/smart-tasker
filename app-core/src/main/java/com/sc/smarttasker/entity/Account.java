@@ -23,7 +23,6 @@ public class Account {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = true)
     private String name;
 
     @Column(nullable = false)
@@ -32,14 +31,17 @@ public class Account {
     @Column(nullable = false, updatable = false)
     private LocalDateTime registered = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "assignedAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "assignedAccount", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Task> tasks;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Set<Role> roles;

@@ -6,6 +6,7 @@ import com.sc.smarttasker.utils.JwtUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -37,9 +36,12 @@ public class UserController {
     @Autowired
     private JwtUtils utils;
 
-    @GetMapping("/csrf-token")
-    public ResponseEntity<CsrfToken> csrfToken(CsrfToken csrfToken) {
-        return ResponseEntity.ok(csrfToken);
+    @Value("${POD_NAME:local}")
+    private String podName;
+
+    @GetMapping("/server")
+    public ResponseEntity<String> serverInfo() {
+        return ResponseEntity.ok(this.podName);
     }
 
     @PostMapping("/login")

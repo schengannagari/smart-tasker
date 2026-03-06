@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Table(name = "tasks")
 @Data
 public class Task {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,13 +17,10 @@ public class Task {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = true)
     private String status;
 
-    @Column(nullable = true)
     private String priority;
 
-    @Column(nullable = true)
     private LocalDate dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +28,6 @@ public class Task {
     private Project project;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_user_id", nullable = true)
+    @JoinColumn(name = "assigned_user_id")
     private Account assignedAccount;
 }

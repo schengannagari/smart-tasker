@@ -10,6 +10,7 @@ import java.util.List;
 @Table(name = "projects")
 @Data
 public class Project {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +25,10 @@ public class Project {
     @Column(nullable = false, updatable = false)
     private LocalDateTime created = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private List<Task> tasks;
 }
 

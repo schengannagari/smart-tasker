@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cockroachdb
+  namespace: smartworker
+spec:
+  serviceName: cockroachdb
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: cockroachdb
+
+  template:
+    metadata:
+      labels:
+        app: cockroachdb
+
+    spec:
+
+      initContainers:
+      - name: copy-certs
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            cp /certs-secret/* /certs/
+            chmod 600 /certs/*
+            chmod 700 /certs
+        volumeMounts:
+          - name: certs-secret
+            mountPath: /certs-secret
+          - name: certs
+            mountPath: /certs
+
+      containers:
+      - name: cockroachdb
+        image: cockroachdb/cockroach:v23.1.11
+
+        command:
+          - cockroach
+          - start
+          - --certs-dir=/cockroach/certs
+          - --advertise-host=$(POD_NAME).cockroachdb
+          - --join=cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb
+          - --cache=25%
+          - --max-sql-memory=25%
+
+        env:
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+
+        ports:
+          - containerPort: 26257
+          - containerPort: 8080
+
+        volumeMounts:
+          - name: certs
+            mountPath: /cockroach/certs
+
+      volumes:
+        - name: certs-secret
+          secret:
+            secretName: cockroach-certs
+
+        - name: certs
+          emptyDir: {}

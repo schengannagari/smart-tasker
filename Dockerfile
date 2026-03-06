@@ -27,6 +27,7 @@ FROM eclipse-temurin:17-jre AS db-migration
 WORKDIR /app
 
 COPY --from=build /app/db-migration/target/db-migration-1.0.0-SNAPSHOT.jar app.jar
+COPY ./cockroach-certs/ca.crt /app/certs/ca.crt
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
@@ -39,6 +40,7 @@ FROM eclipse-temurin:17-jre AS app-core
 WORKDIR /app
 
 COPY --from=build /app/app-core/target/app-core-1.0.0-SNAPSHOT.jar app.jar
+COPY ./cockroach-certs/ca.crt /app/certs/ca.crt
 
 EXPOSE 8089
 

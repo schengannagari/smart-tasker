@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-core-cs-cont
+  namespace: smartworker
+  labels:
+    app: app-core-cs-cont
+
+spec:
+  replicas: 2
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  selector:
+    matchLabels:
+      app: app-core-cs-cont
+
+  template:
+    metadata:
+      labels:
+        app: app-core-cs-cont
+
+    spec:
+      containers:
+      - name: app-core
+        image: schengannagari/smartworker-app:1.0
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 8089
+
+        env:
+
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://cockroachdb:26257/mydb?sslmode=verify-full&sslrootcert=/cockroach/certs/ca.crt
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_USER
+
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: DB_PASSWORD
+
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+
+        volumeMounts:
+        - name: cockroach-certs
+          mountPath: /cockroach/certs
+          readOnly: true
+
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+      volumes:
+      - name: cockroach-certs
+        secret:
+          secretName: cockroach-certs
