@@ -22,49 +22,65 @@ spec:
       - name: copy-certs
         image: busybox
         command:
-          - sh
-          - -c
-          - |
-            cp /certs-secret/* /certs/
-            chmod 600 /certs/*
-            chmod 700 /certs
+        - sh
+        - -c
+        - |
+          chmod 700 /certs
+          cp -L /certs-secret/* /certs/
+          chmod 600 /certs/*
         volumeMounts:
-          - name: certs-secret
-            mountPath: /certs-secret
-          - name: certs
-            mountPath: /certs
+        - name: certs-secret
+          mountPath: /certs-secret
+          readOnly: true
+        - name: certs
+          mountPath: /certs
 
       containers:
       - name: cockroachdb
         image: cockroachdb/cockroach:v23.1.11
 
         command:
-          - cockroach
-          - start
-          - --certs-dir=/cockroach/certs
-          - --advertise-host=$(POD_NAME).cockroachdb
-          - --join=cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb
-          - --cache=25%
-          - --max-sql-memory=25%
+        - cockroach
+        - start
+        - --certs-dir=/cockroach/certs
+        - --advertise-host=$(POD_NAME).cockroachdb
+        - --join=cockroachdb-0.cockroachdb,cockroachdb-1.cockroachdb,cockroachdb-2.cockroachdb
+        - --cache=25%
+        - --max-sql-memory=25%
+        - --logtostderr
 
         env:
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
 
         ports:
-          - containerPort: 26257
-          - containerPort: 8080
+        - containerPort: 26257
+          name: grpc
+        - containerPort: 8080
+          name: http
 
         volumeMounts:
-          - name: certs
-            mountPath: /cockroach/certs
+        - name: datadir
+          mountPath: /cockroach/cockroach-data
+        - name: certs
+          mountPath: /cockroach/certs
 
       volumes:
-        - name: certs-secret
-          secret:
-            secretName: cockroach-certs
+      - name: certs-secret
+        secret:
+          secretName: cockroach-certs
 
-        - name: certs
-          emptyDir: {}
+      - name: certs
+        emptyDir: {}
+
+  volumeClaimTemplates:
+  - metadata:
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi

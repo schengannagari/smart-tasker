@@ -7,12 +7,17 @@ kubectl create secret generic cockroach-certs \
   -n smartworker
 
 
-  openssl x509 -in node.crt -text -noout
+  openssl x509 -in ca.crt -text -noout
 
   kubectl create secret generic db-secret \
  --from-literal=DB_USER=appuser \
  --from-literal=DB_PASSWORD=appuser \
  -n smartworker
+
+  kubectl create secret generic db-secret
+  --from-literal=DB_USER=appuser
+  --from-literal=DB_PASSWORD=appuser
+  -n smartworker
 
  cluster init
  kubectl exec -it cockroachdb-0 -n smartworker -- \

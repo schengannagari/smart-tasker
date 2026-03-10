@@ -5,6 +5,9 @@ metadata:
   namespace: smartworker
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    # Allow all paths to be routed to React for client-side routing
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      try_files $uri /index.html;
 spec:
   rules:
   - host: smartworker.local

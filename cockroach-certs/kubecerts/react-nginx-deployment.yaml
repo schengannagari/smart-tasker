@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: smartworker-web
-        image: schengannagari/smartworker-web:1.0
+        image: schengannagari/smartworker-web:1.1
         ports:
         - containerPort: 80
